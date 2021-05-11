@@ -65,6 +65,7 @@ resource "aws_route_table_association" "route-association" {
   route_table_id = aws_route_table.route_table.id
 }
 
+# creating a security group
 resource "aws_security_group" "SG" {
   name = "Heart-SG"
   vpc_id = "${aws_vpc.vpc.id}"
@@ -88,21 +89,18 @@ resource "aws_security_group" "SG" {
 
 }
 
-/*
-module "ec2_zero" {
-  source = "../../"
-  name = "aws-cluster"
-  ami           = "ami-0a9d27a9f4f5c0efc"
-  instance_type = "t2.micro"
-  instance_count   = 3
-  subnet_id = aws_subnet.subnet-1a.id
-  vpc_security_group_ids = [ aws_security_group.SG.id ]
-  key_name = "key"
 
-  tags = {
-    Name = "AWS-HDP-Instance"
-    Environment = "dev" 
-    }
+# launching instance 
+resource "aws_instance" "AWS-HDP-instance" {
+  ami    = "ami-0a9d27a9f4f5c0efc"
+  count  = "3"
+  instance_type = "t2.micro"
+  subnet_id = "${aws_subnet.subnet-1a.id}"
+  vpc_security_group_ids = ["${aws_security_group.SG.id}"]
+  key_name = "key"
+ tags ={
+    Environment = "${var.environment_tag}"
+    Name= "AWS-HDP-Instance"
+  }
 
 }
-
