@@ -48,6 +48,20 @@ resource "azurerm_public_ip" "hdp-publicip" {
     }
 }
 
+resource "azurerm_public_ip" "hdp-publicip-2" {
+    name                         = "Azure-HDP-PublicIP-2"
+    location                     = azurerm_resource_group.hdp-rg.location
+    resource_group_name          = azurerm_resource_group.hdp-rg.name
+    allocation_method            = "Dynamic"
+
+    tags = {
+        Name = "HDP-Public-IP-2"
+        environment = "Production"
+    }
+}
+
+
+
 # Create Network Security Group and rule
 resource "azurerm_network_security_group" "hdp-sg" {
     name                = "Azure-HDP-SG"
@@ -72,7 +86,7 @@ resource "azurerm_network_security_group" "hdp-sg" {
     }
 }
 
-# Create network interface
+# Create network interfaces
 resource "azurerm_network_interface" "hdp-nic" {
     name                      = "myNIC"
     location                  = azurerm_resource_group.hdp-rg.location
@@ -91,33 +105,102 @@ resource "azurerm_network_interface" "hdp-nic" {
     }
 }
 
+# Create network interface
+resource "azurerm_network_interface" "hdp-nic-2" {
+    name                      = "myNIC-2"
+    location                  = azurerm_resource_group.hdp-rg.location
+    resource_group_name       = azurerm_resource_group.hdp-rg.name
+
+    ip_configuration {
+        name                          = "myNicConfiguration"
+        subnet_id                     = azurerm_subnet.hdp-subnet.id
+        private_ip_address_allocation = "Dynamic"
+        public_ip_address_id          = azurerm_public_ip.hdp-publicip-2.id
+    }
+
+    tags = {
+        Name = "HDP-NIC-2"
+        Environment = "Production"
+    }
+}
+
+
 # Connect the security group to the network interface
 resource "azurerm_network_interface_security_group_association" "hdp-nic-sg" {
     network_interface_id      = azurerm_network_interface.hdp-nic.id
     network_security_group_id = azurerm_network_security_group.hdp-sg.id
 }
 
-# Generate random text for a unique storage account name
-resource "random_id" "randomId" {
-    keepers = {
-        # Generate a new ID only when a new resource group is defined
-        resource_group = azurerm_resource_group.hdp-rg.name
-    }
 
-    byte_length = 8
+#create vm 
+resource "azurerm_virtual_machine" "main-1" {
+  name                  = "az-hdp-vm-1"
+  location              = azurerm_resource_group.hdp-rg.location
+  resource_group_name   = azurerm_resource_group.hdp-rg.name
+  network_interface_ids = [azurerm_network_interface.hdp-nic.id]
+  vm_size               = "Standard_DS1_v2"
+  delete_os_disk_on_termination = true
+  delete_data_disks_on_termination = true
+
+  storage_image_reference {
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "8.1"
+    version   = "latest"
+  }
+  storage_os_disk {
+    name              = "hdp-disk-1"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+  os_profile {
+    computer_name  = "hostname"
+    admin_username = "hdpAdmin"
+    admin_password = "Password1234!"
+  }
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
+  tags = {
+    Name = "Az-HDP-Slave-1"
+    Environment = "Production"
+  }
 }
 
-# Create storage account for boot diagnostics
-resource "azurerm_storage_account" "hdp-storageaccount" {
-    name                        = "diag${random_id.randomId.hex}"
-    resource_group_name         = azurerm_resource_group.hdp-rg.name
-    location                    = azurerm_resource_group.hdp-rg.location
-    account_tier                = "Standard"
-    account_replication_type    = "LRS"
+#create vm
+resource "azurerm_virtual_machine" "main-2" {
+  name                  = "az-hdp-vm-2"
+  location              = azurerm_resource_group.hdp-rg.location
+  resource_group_name   = azurerm_resource_group.hdp-rg.name
+  network_interface_ids = [azurerm_network_interface.hdp-nic-2.id]
+  vm_size               = "Standard_DS1_v2"
+  delete_os_disk_on_termination = true
+  delete_data_disks_on_termination = true
 
-    tags = {
-        Name = "HDP-Storage-Account"
-        environment = "Production"
-    }
+  storage_image_reference {
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "8.1"
+    version   = "latest"
+  }
+  storage_os_disk {
+    name              = "hdp-disk-2"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+  os_profile {
+    computer_name  = "hostname"
+    admin_username = "hdpAdmin"
+    admin_password = "Password1234!"
+  }
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
+  tags = {
+    Name = "Az-HDP-Slave-2"
+    Environment = "Production"
+  }
 }
 
