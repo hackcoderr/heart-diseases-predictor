@@ -36,14 +36,14 @@ resource "azurerm_subnet" "hdp-subnet" {
 }
 
 # Create public IPs
-resource "azurerm_public_ip" "hdp-publicip" {
-    name                         = "Azure-HDP-PublicIP"
+resource "azurerm_public_ip" "hdp-publicip-1" {
+    name                         = "Azure-HDP-PublicIP-1"
     location                     = azurerm_resource_group.hdp-rg.location
     resource_group_name          = azurerm_resource_group.hdp-rg.name
     allocation_method            = "Dynamic"
 
     tags = {
-        Name = "HDP-Public-IP"
+        Name = "HDP-Public-IP-1"
         environment = "Production"
     }
 }
@@ -56,6 +56,18 @@ resource "azurerm_public_ip" "hdp-publicip-2" {
 
     tags = {
         Name = "HDP-Public-IP-2"
+        environment = "Production"
+    }
+}
+
+resource "azurerm_public_ip" "hdp-publicip-3" {
+    name                         = "Azure-HDP-PublicIP-3"
+    location                     = azurerm_resource_group.hdp-rg.location
+    resource_group_name          = azurerm_resource_group.hdp-rg.name
+    allocation_method            = "Dynamic"
+
+    tags = {
+        Name = "HDP-Public-IP-3"
         environment = "Production"
     }
 }
@@ -87,8 +99,8 @@ resource "azurerm_network_security_group" "hdp-sg" {
 }
 
 # Create network interfaces
-resource "azurerm_network_interface" "hdp-nic" {
-    name                      = "myNIC"
+resource "azurerm_network_interface" "hdp-nic-1" {
+    name                      = "myNIC-1"
     location                  = azurerm_resource_group.hdp-rg.location
     resource_group_name       = azurerm_resource_group.hdp-rg.name
 
@@ -96,14 +108,15 @@ resource "azurerm_network_interface" "hdp-nic" {
         name                          = "myNicConfiguration"
         subnet_id                     = azurerm_subnet.hdp-subnet.id
         private_ip_address_allocation = "Dynamic"
-        public_ip_address_id          = azurerm_public_ip.hdp-publicip.id
+        public_ip_address_id          = azurerm_public_ip.hdp-publicip-1.id
     }
 
     tags = {
-        Name = "HDP-NIC"
+        Name = "HDP-NIC-1"
         Environment = "Production"
     }
 }
+
 
 # Create network interface
 resource "azurerm_network_interface" "hdp-nic-2" {
@@ -124,20 +137,49 @@ resource "azurerm_network_interface" "hdp-nic-2" {
     }
 }
 
+resource "azurerm_network_interface" "hdp-nic-3" {
+    name                      = "myNIC-3"
+    location                  = azurerm_resource_group.hdp-rg.location
+    resource_group_name       = azurerm_resource_group.hdp-rg.name
 
-# Connect the security group to the network interface
-resource "azurerm_network_interface_security_group_association" "hdp-nic-sg" {
-    network_interface_id      = azurerm_network_interface.hdp-nic.id
-    network_security_group_id = azurerm_network_security_group.hdp-sg.id
+    ip_configuration {
+        name                          = "myNicConfiguration"
+        subnet_id                     = azurerm_subnet.hdp-subnet.id
+        private_ip_address_allocation = "Dynamic"
+        public_ip_address_id          = azurerm_public_ip.hdp-publicip-3.id
+    }
+
+    tags = {
+        Name = "HDP-NIC-3"
+        Environment = "Production"
+    }
 }
 
 
-#create vm 
-resource "azurerm_virtual_machine" "main-1" {
+
+
+# Connect the security group to the network interface
+resource "azurerm_network_interface_security_group_association" "hdp-nic-sg-1" {
+    network_interface_id      = azurerm_network_interface.hdp-nic-1.id
+    network_security_group_id = azurerm_network_security_group.hdp-sg.id
+}
+
+resource "azurerm_network_interface_security_group_association" "hdp-nic-sg-2" {
+    network_interface_id      = azurerm_network_interface.hdp-nic-2.id
+    network_security_group_id = azurerm_network_security_group.hdp-sg.id
+}
+
+resource "azurerm_network_interface_security_group_association" "hdp-nic-sg-3" {
+    network_interface_id      = azurerm_network_interface.hdp-nic-3.id
+    network_security_group_id = azurerm_network_security_group.hdp-sg.id
+}
+  
+
+ resource "azurerm_virtual_machine" "main-1" {
   name                  = "az-hdp-vm-1"
   location              = azurerm_resource_group.hdp-rg.location
   resource_group_name   = azurerm_resource_group.hdp-rg.name
-  network_interface_ids = [azurerm_network_interface.hdp-nic.id]
+  network_interface_ids = [azurerm_network_interface.hdp-nic-1.id]
   vm_size               = "Standard_DS1_v2"
   delete_os_disk_on_termination = true
   delete_data_disks_on_termination = true
@@ -162,6 +204,7 @@ resource "azurerm_virtual_machine" "main-1" {
   os_profile_linux_config {
     disable_password_authentication = false
   }
+  
   tags = {
     Name = "Az-HDP-Slave-1"
     Environment = "Production"
@@ -200,6 +243,42 @@ resource "azurerm_virtual_machine" "main-2" {
   }
   tags = {
     Name = "Az-HDP-Slave-2"
+    Environment = "Production"
+  }
+}
+
+
+resource "azurerm_virtual_machine" "main-3" {
+  name                  = "az-hdp-vm-3"
+  location              = azurerm_resource_group.hdp-rg.location
+  resource_group_name   = azurerm_resource_group.hdp-rg.name
+  network_interface_ids = [azurerm_network_interface.hdp-nic-3.id]
+  vm_size               = "Standard_DS1_v2"
+  delete_os_disk_on_termination = true
+  delete_data_disks_on_termination = true
+
+  storage_image_reference {
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "8.1"
+    version   = "latest"
+  }
+  storage_os_disk {
+    name              = "hdp-disk-3"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+ os_profile {
+    computer_name  = "hostname"
+    admin_username = "hdpAdmin"
+    admin_password = "Password1234!"
+  }
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
+  tags = {
+    Name = "Az-HDP-Slave-3"
     Environment = "Production"
   }
 }
