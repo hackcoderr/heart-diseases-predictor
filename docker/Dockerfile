@@ -15,5 +15,7 @@ COPY RandomForest_Heart_Prediction.h5    /heart_app
 COPY  app.py  /heart_app
 COPY  myform.html  /heart_app/templates
 COPY  results.html   /heart_app/templates
-EXPOSE  4444WORKDIR  /heart_app
-CMD export FLASK_APP=app.pyENTRYPOINT flask  run --host=0.0.0.0    --port=4444
+EXPOSE  4444
+WORKDIR  /heart_app
+CMD export FLASK_APP=app.py
+ENTRYPOINT flask  run --host=0.0.0.0    --port=4444
