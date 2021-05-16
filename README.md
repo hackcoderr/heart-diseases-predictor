@@ -374,7 +374,7 @@ Now the `mainplaybook` will contains the roles of `master`, `slaves` and `jenkin
 # Running Main Playbook:
 
 <p align="center">
-    <img width="900" height="400" src="https://raw.githubusercontent.com/amit17133129/Heart_Diseases_Prediction_App_Creation_Using_MLOps_Tools/main/Images/3.gif">
+    <img width="900" height="400" src="https://github.com/hackcoderr/heart-diseases-predictor/blob/master/images/3.gif">
 </p>
 
 <p align="center">
@@ -392,7 +392,7 @@ You can run the `mainplaybook.yml` using `ansible-playbook mainplaybook.yml`
 Now login to jenkins jenkins node using `public_ip:8080`. We need to set the password for jenkins node intially. This process needed to be done only once. You will be landed on this page and it will ask for password.
 
 <p align="center">
-    <img width="900" height="300" src="https://miro.medium.com/max/792/1*nYJPAJAXfkeOKUvNuzRUCQ.jpeg">
+    <img width="900" height="300" src="https://github.com/hackcoderr/heart-diseases-predictor/blob/master/images/jen.jpeg">
 </p>
 
 copy the `/var/lib/jenkins/secrets/initialAdminPassword` the location and using cat command you can take the passowrd like this in the below image.
@@ -442,16 +442,17 @@ pipeline {
 Now we need to copy the url of repository and you have to create a new job with `multibranch pipeline` and you need to to add source “git” and paste the url and save the job.
 
 <p align="center">
-    <img width="900" height="400" src="https://raw.githubusercontent.com/amit17133129/Heart_Diseases_Prediction_App_Creation_Using_MLOps_Tools/main/Images/8.gif">
+    <img width="900" height="400" src="https://github.com/hackcoderr/heart-diseases-predictor/blob/master/ansible/123.jpg">
 </p>
 Now you have to just and it will create two `jobs` one for `main branch` and another for `developer branch`. As soon as the developer branch succeed it will create a deployment in the `Kubernetes cluster` and behind the scene it will launch pod and it also expose that `deployment` so any client can access the page.
 
 <p align="center">
-    <img width="900" height="400" src="https://raw.githubusercontent.com/amit17133129/Heart_Diseases_Prediction_App_Creation_Using_MLOps_Tools/main/Images/9.gif">
+    <img width="900" height="400" src="https://github.com/hackcoderr/heart-diseases-predictor/blob/master/images/12344.jpg">
 </p>
 
 Now you can access the webapp with the public ip of the slave node and with the exposed port.
 
-<p align="center">
-    <img width="900" height="400" src="https://raw.githubusercontent.com/amit17133129/Heart_Diseases_Prediction_App_Creation_Using_MLOps_Tools/main/Images/10.gif">
-</p>
+**Visit on my web app to see the result**
+http://13.234.21.125:31207/home
+
+So fill the required stuff and check your heart health.
