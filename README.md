@@ -378,11 +378,11 @@ Now the `mainplaybook` will contains the roles of `master`, `slaves` and `jenkin
 </p>
 
 <p align="center">
-    <img width="900" height="400" src="https://raw.githubusercontent.com/amit17133129/Heart_Diseases_Prediction_App_Creation_Using_MLOps_Tools/main/Images/4.gif">
+    <img width="900" height="400" src="https://github.com/hackcoderr/heart-diseases-predictor/blob/master/images/4.gif">
 </p>
 
 <p align="center">
-    <img width="900" height="400" src="https://raw.githubusercontent.com/amit17133129/Heart_Diseases_Prediction_App_Creation_Using_MLOps_Tools/main/Images/5.gif">
+    <img width="900" height="400" src="https://github.com/hackcoderr/heart-diseases-predictor/blob/master/images/5.gif">
 </p>
 
 You can run the `mainplaybook.yml` using `ansible-playbook mainplaybook.yml`
@@ -403,7 +403,7 @@ Now copy the password and pate in the `Administrator password` section and then 
 
 
 
-After that you need to create a password because this password is too long and hard to remember. So below are the steps shown in the video to create the password and to install the restive plugins. Ensure that you have to install below plugins. watch this video for reference https://youtu.be/1spUYaUKaao
+After that you need to create a password because this password is too long and hard to remember. So below are the steps shown in the video to create the password and to install the restive plugins. Ensure that you have to install below plugins. 
 
 Plugins from below lists needed to be installed:
 
